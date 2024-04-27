@@ -1,17 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@providers/AuthProvider";
+import { useNavigate, NavigateFunction } from "react-router-dom";
+import { useAuth, AuthContext } from "@providers/AuthProvider";
 
-const Logout = () => {
-	const { setAccessToken, setRefreshToken } = useAuth();
-	const navigate = useNavigate();
+const Logout: React.FC = () => {
+	const { setAccessToken, setRefreshToken }: AuthContext = useAuth();
+	const navigate: NavigateFunction = useNavigate();
 
-	const handleLogout = () => {
+	const handleLogout = (): void => {
 		setAccessToken(null);
 		setRefreshToken(null);
 		navigate("/", { replace: true });
 	};
 
-	setTimeout(() => {
+	setTimeout((): void => {
 		handleLogout();
 	}, 3 * 1000);
 

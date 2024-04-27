@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "@providers/AuthProvider";
+import { useAuth, AuthContext } from "@providers/AuthProvider";
 
-export const ProtectedRoute = () => {
-	const { accessToken } = useAuth();
+export const ProtectedRoute: React.FC = () => {
+	const { accessToken }: AuthContext = useAuth();
 
 	// Check if the user is authenticated
 	if (!accessToken) {

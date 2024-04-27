@@ -1,16 +1,20 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-interface AuthContext {
+export interface AuthContext {
 	accessToken: string | null;
 	setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
 	refreshToken: string | null;
 	setRefreshToken: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
+interface AuthProviderProps {
+	children: React.ReactElement;
+}
+
 const AuthContext = createContext({} as AuthContext);
 
-const AuthProvider = ({ children }: any) => {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	// State to hold the authentication and refresh tokens
 	const [accessToken, setAccessToken] = useState(
 		localStorage.getItem("accessToken")
@@ -19,7 +23,7 @@ const AuthProvider = ({ children }: any) => {
 		localStorage.getItem("refreshToken")
 	);
 
-	useEffect(() => {
+	useEffect((): void => {
 		if (accessToken) {
 			axios.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
 			localStorage.setItem("accessToken", accessToken);
@@ -33,7 +37,7 @@ const AuthProvider = ({ children }: any) => {
 	}, [accessToken, refreshToken]);
 
 	// Memoized value of the authentication context
-	const contextValue = useMemo(
+	const contextValue: AuthContext = useMemo(
 		() => ({
 			accessToken,
 			setAccessToken,

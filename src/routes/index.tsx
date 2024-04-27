@@ -1,14 +1,18 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "@providers/AuthProvider";
+import {
+	RouterProvider,
+	createBrowserRouter,
+	RouteObject,
+} from "react-router-dom";
+import { useAuth, AuthContext } from "@providers/AuthProvider";
 import { ProtectedRoute } from "@routes/ProtectedRoute";
 import Login from "@pages/Login";
 import Logout from "@pages/Logout";
 
-const Routes = () => {
-	const { accessToken } = useAuth();
+const Routes: React.FC = () => {
+	const { accessToken }: AuthContext = useAuth();
 
 	// Define public routes accessible to all users
-	const routesForPublic = [
+	const routesForPublic: RouteObject[] = [
 		{
 			path: "/service",
 			element: <div>Service Page</div>,
@@ -20,7 +24,7 @@ const Routes = () => {
 	];
 
 	// Define routes accessible only to authenticated users
-	const routesForAuthenticatedOnly = [
+	const routesForAuthenticatedOnly: RouteObject[] = [
 		{
 			path: "/",
 			element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
@@ -42,7 +46,7 @@ const Routes = () => {
 	];
 
 	// Define routes accessible only to non-authenticated users
-	const routesForNotAuthenticatedOnly = [
+	const routesForNotAuthenticatedOnly: RouteObject[] = [
 		{
 			path: "/",
 			element: <div>Home Page</div>,
