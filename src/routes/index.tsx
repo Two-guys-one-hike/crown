@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { useAuth, AuthContext } from "@providers/AuthProvider";
 import { ProtectedRoute } from "@routes/ProtectedRoute";
+import Home from "@pages/Home";
 import Login from "@pages/Login";
 import Logout from "@pages/Logout";
 
@@ -13,6 +14,10 @@ const Routes: React.FC = () => {
 
 	// Define public routes accessible to all users
 	const routesForPublic: RouteObject[] = [
+		{
+			path: "/",
+			element: <Home />,
+		},
 		{
 			path: "/service",
 			element: <div>Service Page</div>,
@@ -30,10 +35,6 @@ const Routes: React.FC = () => {
 			element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
 			children: [
 				{
-					path: "/",
-					element: <div>User Home Page</div>,
-				},
-				{
 					path: "/profile",
 					element: <div>User Profile</div>,
 				},
@@ -47,10 +48,6 @@ const Routes: React.FC = () => {
 
 	// Define routes accessible only to non-authenticated users
 	const routesForNotAuthenticatedOnly: RouteObject[] = [
-		{
-			path: "/",
-			element: <div>Home Page</div>,
-		},
 		{
 			path: "/login",
 			element: <Login />,

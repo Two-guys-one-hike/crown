@@ -3,9 +3,11 @@ import Routes from "./routes";
 
 function App() {
 	return (
-		<AuthProvider>
-			<Routes />
-		</AuthProvider>
+		<div className="container mt-5">
+			<AuthProvider>
+				<Routes />
+			</AuthProvider>
+		</div>
 	);
 }
 
