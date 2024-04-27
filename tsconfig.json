@@ -1,4 +1,5 @@
 {
+	"extends": "./tsconfig.paths.json",
 	"compilerOptions": {
 		"target": "es5",
 		"lib": ["dom", "dom.iterable", "esnext"],
@@ -14,14 +15,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
-		"jsx": "react-jsx",
-		"rootDir": "./",
-		"outDir": "./build",
-		"paths": {
-			"#components/*": ["./src/components/*.js"],
-			"#providers/*": ["./src/providers/*.js"],
-			"#routes/*": ["./src/routes/*.js"]
-		}
+		"jsx": "react-jsx"
 	},
 	"include": ["src"]
 }

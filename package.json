@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
+		"@craco/craco": "^7.1.0",
 		"@testing-library/jest-dom": "^5.17.0",
 		"@testing-library/react": "^13.4.0",
 		"@testing-library/user-event": "^13.5.0",
@@ -21,7 +22,7 @@
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"start": "craco start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
@@ -44,9 +45,7 @@
 			"last 1 safari version"
 		]
 	},
-	"imports": {
-		"#components/*": "./src/components/*.js",
-		"#providers/*": "./src/providers/*.js",
-		"#routes/*": "./src/routes/*.js"
+	"devDependencies": {
+		"craco-alias": "^3.0.1"
 	}
 }
