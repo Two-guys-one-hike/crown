@@ -1,62 +1,111 @@
 import { useNavigate, NavigateFunction } from "react-router-dom";
 import { useAuth, AuthContext } from "@providers/AuthProvider";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import cn from "classnames";
+
+interface Credentials {
+	username: string;
+	password: string;
+}
 
 const Login: React.FC = () => {
 	const { setAccessToken, setRefreshToken }: AuthContext = useAuth();
 	const navigate: NavigateFunction = useNavigate();
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
+	const [usernameCN, setUsernameCN] = useState("form-control");
+	const [passwordCN, setPasswordCN] = useState("form-control");
 
-	const handleLogin = async (event: React.FormEvent) => {
-		event.preventDefault();
-		const user = {
-			username,
-			password,
-		};
+	const {
+		register,
+		handleSubmit,
+		setError,
+		reset,
+		resetField,
+		formState: { errors, isSubmitted },
+	} = useForm();
 
-		try {
-			// Create POST request
-			const { data } = await axios.post(
-				"http://localhost:8000/api/account/token/",
-				user,
-				{
-					headers: { "Content-Type": "application/json" },
-					withCredentials: true,
-				}
+	const onSubmit = async (formData: any) => {
+		const credentials = formData as Credentials;
+
+		// Create POST request
+		await axios
+			.post("http://localhost:8000/api/account/token/", credentials, {
+				headers: { "Content-Type": "application/json" },
+				withCredentials: true,
+			})
+			.then((response) => {
+				// Store access and refresh tokens
+				setAccessToken(response.data.access);
+				setRefreshToken(response.data.refresh);
+				reset();
+				navigate("/", { replace: true });
+			})
+			.catch((error) => {
+				console.log(error.response.data.detail);
+				resetField("password");
+				setError("password", {
+					type: "generic",
+					message: error.response?.data?.detail
+						? error.response.data.detail
+						: "Error occurred during login.",
+				});
+				setPasswordCN(
+					cn("form-control", {
+						"is-valid": false,
+						"is-invalid": true,
+					})
+				);
+				console.error(error);
+			});
+	};
+
+	useEffect((): void => {
+		if (errors.username?.type === "required") {
+			setUsernameCN(
+				cn("form-control", { "is-valid": false, "is-invalid": true })
 			);
-
-			// Store access and refresh tokens
-			setAccessToken(data.access);
-			setRefreshToken(data.refresh);
-			navigate("/", { replace: true });
-		} catch (error) {
-			console.log(error);
+		} else if (!errors.username) {
+			setUsernameCN(
+				cn("form-control", {
+					"is-valid": isSubmitted ? true : false,
+					"is-invalid": false,
+				})
+			);
 		}
-	};
+	}, [errors.username]);
 
-	const handleUsernameChange = (event: React.FormEvent<HTMLInputElement>) => {
-		setUsername(event.currentTarget.value);
-	};
-
-	const handlePasswordChange = (event: React.FormEvent<HTMLInputElement>) => {
-		setPassword(event.currentTarget.value);
-	};
+	useEffect((): void => {
+		if (errors.password?.type === "required") {
+			setPasswordCN(
+				cn("form-control", { "is-valid": false, "is-invalid": true })
+			);
+		} else if (!errors.password) {
+			setPasswordCN(
+				cn("form-control", {
+					"is-valid": isSubmitted ? true : false,
+					"is-invalid": false,
+				})
+			);
+		}
+	}, [errors.password]);
 
 	return (
 		<div>
-			<form onSubmit={handleLogin}>
+			<form onSubmit={handleSubmit(onSubmit)}>
 				<div className="mb-3">
 					<label htmlFor="inputUserName" className="form-label">
 						Username
 					</label>
 					<input
 						type="text"
-						className="form-control"
+						className={usernameCN}
 						id="inputUserName"
-						onChange={handleUsernameChange}
+						{...register("username", { required: true })}
 					/>
+					{errors.username?.type === "required" && (
+						<p className="invalid-feedback">Username is required.</p>
+					)}
 				</div>
 				<div className="mb-3">
 					<label htmlFor="inputPassword" className="form-label">
@@ -64,12 +113,21 @@ const Login: React.FC = () => {
 					</label>
 					<input
 						type="password"
-						className="form-control"
+						className={passwordCN}
 						id="inputPassword"
-						onChange={handlePasswordChange}
+						{...register("password", { required: true })}
 					/>
+					{errors.password?.type === "required" && (
+						<p className="invalid-feedback">Password is required.</p>
+					)}
+					{errors.password?.type === "generic" && (
+						<p className="invalid-feedback">
+							{errors.password.message?.toString()}
+						</p>
+					)}
 				</div>
-				<button type="submit" className="btn btn-primary" onClick={handleLogin}>
+				<div className="mb-4"></div>
+				<button type="submit" className="btn btn-primary">
 					Login
 				</button>
 			</form>
