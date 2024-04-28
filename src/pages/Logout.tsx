@@ -9,21 +9,23 @@ const Logout: React.FC = () => {
 
 	const handleLogout = async (event: React.FormEvent) => {
 		event.preventDefault();
-		try {
-			await axios.post(
+		await axios
+			.post(
 				"http://localhost:8000/api/account/logout/",
 				{ refresh: refreshToken },
 				{
 					headers: { "Content-Type": "application/json" },
 					withCredentials: true,
 				}
-			);
-			setAccessToken(null);
-			setRefreshToken(null);
-			navigate("/", { replace: true });
-		} catch (error) {
-			console.log("Logout failed:", error);
-		}
+			)
+			.catch((error) => {
+				console.log("Logout failed:", error);
+			})
+			.finally(() => {
+				setAccessToken(null);
+				setRefreshToken(null);
+				navigate("/", { replace: true });
+			});
 	};
 
 	return (
