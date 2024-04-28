@@ -1,6 +1,9 @@
 import { useNavigate, NavigateFunction } from "react-router-dom";
-import { useAuth, AuthContext } from "@providers/AuthProvider";
-import axios from "axios";
+import {
+	useAuth,
+	AuthContext,
+	ApiCallOptionalParameter,
+} from "@providers/AuthProvider";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
@@ -11,7 +14,7 @@ interface Credentials {
 }
 
 const Login: React.FC = () => {
-	const { setAccessToken, setRefreshToken }: AuthContext = useAuth();
+	const { setAccessToken, setRefreshToken, apiCall }: AuthContext = useAuth();
 	const navigate: NavigateFunction = useNavigate();
 	const [usernameCN, setUsernameCN] = useState("form-control");
 	const [passwordCN, setPasswordCN] = useState("form-control");
@@ -28,36 +31,40 @@ const Login: React.FC = () => {
 	const onSubmit = async (formData: any) => {
 		const credentials = formData as Credentials;
 
-		// Create POST request
-		await axios
-			.post("http://localhost:8000/api/account/token/", credentials, {
-				headers: { "Content-Type": "application/json" },
-				withCredentials: true,
-			})
-			.then((response) => {
-				// Store access and refresh tokens
-				setAccessToken(response.data.access);
-				setRefreshToken(response.data.refresh);
-				reset();
-				navigate("/", { replace: true });
-			})
-			.catch((error) => {
-				console.log(error.response.data.detail);
-				resetField("password");
-				setError("password", {
-					type: "generic",
-					message: error.response?.data?.detail
-						? error.response.data.detail
-						: "Error occurred during login.",
-				});
-				setPasswordCN(
-					cn("form-control", {
-						"is-valid": false,
-						"is-invalid": true,
-					})
-				);
-				console.error(error);
+		const onSuccess = (response: any) => {
+			// Store access and refresh tokens
+			setAccessToken(response.data.access);
+			setRefreshToken(response.data.refresh);
+			reset();
+			navigate("/", { replace: true });
+		};
+
+		const onError = (error: any) => {
+			console.log(error.response.data.detail);
+			resetField("password");
+			setError("password", {
+				type: "generic",
+				message: error.response?.data?.detail
+					? error.response.data.detail
+					: "Error occurred during login.",
 			});
+			setPasswordCN(
+				cn("form-control", {
+					"is-valid": false,
+					"is-invalid": true,
+				})
+			);
+			console.error(error);
+		};
+
+		const requestApiCall: ApiCallOptionalParameter = {
+			method: "POST",
+			data: credentials,
+			auth: true,
+			onSuccess,
+			onError,
+		};
+		await apiCall("/api/account/token/", requestApiCall);
 	};
 
 	useEffect((): void => {
