@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, Method } from "axios";
+import axios, { Method } from "axios";
 import {
 	createContext,
 	useContext,
@@ -21,18 +21,18 @@ interface AuthProviderProps {
 	children: React.ReactElement;
 }
 
-type ApiCallSuccess = (response: any) => void;
-type ApiCallError = (error: any) => void;
-type ApiCallCallback = () => void;
+type ThenCallback = (response: any) => void;
+type CatchCallback = (error: any) => void;
+type FinallyCallback = () => void;
 
 export interface ApiCallOptionalParameter {
 	method?: Method;
 	data?: object;
 	auth?: boolean;
 	contentType?: string;
-	onSuccess?: ApiCallSuccess;
-	onError?: ApiCallError;
-	callback?: ApiCallCallback;
+	thenCallback?: ThenCallback;
+	catchCallback?: CatchCallback;
+	finallyCallback?: FinallyCallback;
 }
 
 type ApiCall = (
@@ -42,9 +42,9 @@ type ApiCall = (
 		data,
 		auth,
 		contentType,
-		onSuccess,
-		onError,
-		callback,
+		thenCallback,
+		catchCallback,
+		finallyCallback,
 	}: ApiCallOptionalParameter
 ) => Promise<void>;
 
@@ -134,9 +134,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				data,
 				auth,
 				contentType,
-				onSuccess,
-				onError,
-				callback,
+				thenCallback,
+				catchCallback,
+				finallyCallback,
 			}: ApiCallOptionalParameter
 		) => {
 			const headers = {
@@ -165,18 +165,18 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 					withCredentials,
 				})
 				.then((response) => {
-					if (onSuccess) {
-						onSuccess(response);
+					if (thenCallback) {
+						thenCallback(response);
 					}
 				})
 				.catch((error) => {
-					if (onError) {
-						onError(error);
+					if (catchCallback) {
+						catchCallback(error);
 					}
 				})
 				.finally(() => {
-					if (callback) {
-						callback();
+					if (finallyCallback) {
+						finallyCallback();
 					}
 				});
 		},

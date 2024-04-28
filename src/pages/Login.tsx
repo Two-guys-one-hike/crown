@@ -31,7 +31,7 @@ const Login: React.FC = () => {
 	const onSubmit = async (formData: any) => {
 		const credentials = formData as Credentials;
 
-		const onSuccess = (response: any) => {
+		const thenCallback = (response: any) => {
 			// Store access and refresh tokens
 			setAccessToken(response.data.access);
 			setRefreshToken(response.data.refresh);
@@ -39,7 +39,7 @@ const Login: React.FC = () => {
 			navigate("/", { replace: true });
 		};
 
-		const onError = (error: any) => {
+		const catchCallback = (error: any) => {
 			console.log(error.response.data.detail);
 			resetField("password");
 			setError("password", {
@@ -61,8 +61,8 @@ const Login: React.FC = () => {
 			method: "POST",
 			data: credentials,
 			auth: true,
-			onSuccess,
-			onError,
+			thenCallback,
+			catchCallback,
 		};
 		await apiCall("/api/account/token/", requestApiCall);
 	};
