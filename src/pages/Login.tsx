@@ -2,7 +2,7 @@ import { useNavigate, NavigateFunction } from "react-router-dom";
 import {
 	useAuth,
 	AuthContext,
-	ApiCallOptionalParameter,
+	ApiCallOptionalParameters,
 } from "@providers/AuthProvider";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,8 @@ interface Credentials {
 }
 
 const Login: React.FC = () => {
-	const { setAccessToken, setRefreshToken, apiCall }: AuthContext = useAuth();
+	const { setAccessToken, setRefreshToken, authApiCall }: AuthContext =
+		useAuth();
 	const navigate: NavigateFunction = useNavigate();
 	const [usernameCN, setUsernameCN] = useState("form-control");
 	const [passwordCN, setPasswordCN] = useState("form-control");
@@ -28,7 +29,7 @@ const Login: React.FC = () => {
 		formState: { errors, isSubmitted },
 	} = useForm();
 
-	const onSubmit = async (formData: any) => {
+	const onSubmit = (formData: any) => {
 		const credentials = formData as Credentials;
 
 		const thenCallback = (response: any) => {
@@ -57,14 +58,13 @@ const Login: React.FC = () => {
 			console.error(error);
 		};
 
-		const requestApiCall: ApiCallOptionalParameter = {
+		const requestApiCall: ApiCallOptionalParameters = {
 			method: "POST",
 			data: credentials,
-			auth: true,
 			thenCallback,
 			catchCallback,
 		};
-		await apiCall("/api/account/token/", requestApiCall);
+		authApiCall("/api/account/token/", requestApiCall);
 	};
 
 	useEffect((): void => {
@@ -80,7 +80,7 @@ const Login: React.FC = () => {
 				})
 			);
 		}
-	}, [errors.username]);
+	}, [errors.username, isSubmitted]);
 
 	useEffect((): void => {
 		if (errors.password?.type === "required") {
@@ -95,7 +95,7 @@ const Login: React.FC = () => {
 				})
 			);
 		}
-	}, [errors.password]);
+	}, [errors.password, isSubmitted]);
 
 	return (
 		<div>

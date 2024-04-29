@@ -2,7 +2,7 @@ import { useNavigate, NavigateFunction } from "react-router-dom";
 import {
 	useAuth,
 	AuthContext,
-	ApiCallOptionalParameter,
+	ApiCallOptionalParameters,
 } from "@providers/AuthProvider";
 
 const Logout: React.FC = () => {
@@ -10,11 +10,11 @@ const Logout: React.FC = () => {
 		refreshToken,
 		setAccessToken,
 		setRefreshToken,
-		apiCall,
+		authApiCall,
 	}: AuthContext = useAuth();
 	const navigate: NavigateFunction = useNavigate();
 
-	const handleLogout = async (event: React.FormEvent) => {
+	const handleLogout = (event: React.FormEvent) => {
 		event.preventDefault();
 
 		const catchCallback = (error: any) => {
@@ -28,14 +28,13 @@ const Logout: React.FC = () => {
 			navigate("/", { replace: true });
 		};
 
-		const requestApiCall: ApiCallOptionalParameter = {
+		const requestApiCall: ApiCallOptionalParameters = {
 			method: "POST",
 			data: { refresh: refreshToken },
-			auth: true,
 			catchCallback,
 			finallyCallback,
 		};
-		await apiCall("/api/account/logout/", requestApiCall);
+		authApiCall("/api/account/logout/", requestApiCall);
 	};
 
 	return (
