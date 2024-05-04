@@ -65,11 +65,13 @@ export function createJWTAxiosInstance(
 					 */
 					error.response.config.headers["Authorization"] =
 						"Bearer " + response.data[accessToken.name];
-					if (injectRefresh)
-						error.response.config.data = {
-							...error.response.config.data,
-							...refreshToken.data,
-						};
+					if (injectRefresh) {
+						const refreshKey = Object.keys(refreshToken.data)[0];
+						let originalData = JSON.parse(error.response.config.data);
+						originalData[refreshKey] = response.data[refreshKey];
+						const updatedlData = JSON.stringify(originalData);
+						error.response.config.data = updatedlData;
+					}
 					return axios_instance(error.response.config);
 				})
 				.catch((retry_error) => {
