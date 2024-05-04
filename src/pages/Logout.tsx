@@ -2,7 +2,7 @@ import { useNavigate, NavigateFunction } from "react-router-dom";
 import {
 	useAuth,
 	AuthContext,
-	ApiCallOptionalParameters,
+	AuthAPICallParams,
 } from "@providers/AuthProvider";
 
 const Logout: React.FC = () => {
@@ -15,27 +15,25 @@ const Logout: React.FC = () => {
 	const navigate: NavigateFunction = useNavigate();
 
 	const handleLogout = (event: React.FormEvent) => {
-		// TODO Capire a cosa serve?
-		event.preventDefault();
-
 		const catchCallback = (error: any) => {
 			console.log("Logout failed:", error);
 		};
 
 		const finallyCallback = () => {
-			// Remove access and refresh tokens
+			// Clean access and refresh tokens
 			setAccessToken(null);
 			setRefreshToken(null);
 			navigate("/", { replace: true });
 		};
 
-		const requestApiCall: ApiCallOptionalParameters = {
+		const authApiCallParams: AuthAPICallParams = {
 			method: "POST",
 			data: { refresh: refreshToken },
+			injectRefresh: true,
 			catchCallback,
 			finallyCallback,
 		};
-		authApiCall("/api/account/logout/", requestApiCall);
+		authApiCall("/api/account/logout/", authApiCallParams);
 	};
 
 	return (

@@ -1,7 +1,7 @@
 import {
 	useAuth,
 	AuthContext,
-	ApiCallOptionalParameters,
+	AuthAPICallParams,
 } from "@providers/AuthProvider";
 import { useEffect, useState } from "react";
 import { useNavigate, NavigateFunction } from "react-router-dom";
@@ -28,7 +28,7 @@ const Home: React.FC = () => {
 			setHomeContent("Home page as Guest");
 		};
 
-		const requestApiCall: ApiCallOptionalParameters = {
+		const requestApiCall: AuthAPICallParams = {
 			method: "GET",
 			thenCallback,
 			catchCallback,

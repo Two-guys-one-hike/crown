@@ -19,7 +19,7 @@ interface AuthProviderProps {
 }
 
 export interface AuthAPICallParams extends APICallParams {
-	injectRefresh: boolean;
+	injectRefresh?: boolean;
 }
 
 type AuthAPICall = (
@@ -91,7 +91,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				contentType,
 				jwtAccessToken,
 				jwtRefreshToken,
-				injectRefresh,
+				injectRefresh: injectRefresh ? injectRefresh : false,
 				storeTokens,
 				cleanTokens,
 				thenCallback,

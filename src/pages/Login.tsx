@@ -2,8 +2,9 @@ import { useNavigate, NavigateFunction } from "react-router-dom";
 import {
 	useAuth,
 	AuthContext,
-	ApiCallOptionalParameters,
+	AuthAPICallParams,
 } from "@providers/AuthProvider";
+import { apiCall } from "@utils/BackendHelpers";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
@@ -56,13 +57,13 @@ const Login: React.FC = () => {
 			console.error(error);
 		};
 
-		const authApiCallParams: ApiCallOptionalParameters = {
+		const authApiCallParams: AuthAPICallParams = {
 			method: "POST",
 			data: credentials,
 			thenCallback,
 			catchCallback,
 		};
-		authApiCall("/api/account/token/", authApiCallParams);
+		apiCall("/api/account/token/", authApiCallParams);
 	};
 
 	useEffect((): void => {
