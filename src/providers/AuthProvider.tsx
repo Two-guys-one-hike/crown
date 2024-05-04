@@ -1,4 +1,3 @@
-import { Method } from "axios";
 import {
 	createContext,
 	useContext,
@@ -8,48 +7,40 @@ import {
 	useCallback,
 } from "react";
 import {
-	createJWTAxiosInstance,
 	JWTAccessToken,
 	JWTRefreshToken,
 	StoreTokens,
 	ClearTokens,
 } from "@utils/AxiosHelpers";
+import { jwtApiCall, APICallParams } from "@utils/BackendHelpers";
 
 interface AuthProviderProps {
 	children: React.ReactElement;
 }
 
-type ThenCallback = (response: any) => void;
-type CatchCallback = (error: any) => void;
-type FinallyCallback = () => void;
-
-export interface ApiCallOptionalParameters {
-	method?: Method;
-	data?: object;
-	contentType?: string;
-	thenCallback?: ThenCallback;
-	catchCallback?: CatchCallback;
-	finallyCallback?: FinallyCallback;
+export interface AuthAPICallParams extends APICallParams {
+	injectRefresh: boolean;
 }
 
-type AuthApiCall = (
+type AuthAPICall = (
 	url: string,
 	{
 		method,
 		data,
 		contentType,
+		injectRefresh,
 		thenCallback,
 		catchCallback,
 		finallyCallback,
-	}: ApiCallOptionalParameters
-) => Promise<void>;
+	}: AuthAPICallParams
+) => void;
 
 export interface AuthContext {
 	accessToken: string | null;
 	setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
 	refreshToken: string | null;
 	setRefreshToken: React.Dispatch<React.SetStateAction<string | null>>;
-	authApiCall: AuthApiCall;
+	authApiCall: AuthAPICall;
 }
 
 // eslint-disable-next-line
@@ -65,19 +56,18 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	);
 
 	const authApiCall = useCallback(
-		async (
+		(
 			url: string,
 			{
 				method,
 				data,
 				contentType,
+				injectRefresh,
 				thenCallback,
 				catchCallback,
 				finallyCallback,
-			}: ApiCallOptionalParameters
+			}: AuthAPICallParams
 		) => {
-			// Create Axios instance with JWT refresh handler
-			const baseUrl = "http://localhost:8000";
 			const jwtAccessToken: JWTAccessToken = {
 				name: "access",
 				token: accessToken ? accessToken : undefined,
@@ -94,40 +84,20 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				setAccessToken(null);
 				setRefreshToken(null);
 			};
-			const jwtAxiosInstance = createJWTAxiosInstance(
-				baseUrl,
+
+			jwtApiCall(url, {
+				method,
+				data,
+				contentType,
 				jwtAccessToken,
 				jwtRefreshToken,
+				injectRefresh,
 				storeTokens,
-				cleanTokens
-			);
-
-			// Create HTTP request from provided parameters
-			await jwtAxiosInstance
-				.request({
-					url,
-					method,
-					data,
-					headers: {
-						"Content-Type": contentType ? contentType : "application/json",
-					},
-					withCredentials: true,
-				})
-				.then((response) => {
-					if (thenCallback) {
-						thenCallback(response);
-					}
-				})
-				.catch((error) => {
-					if (catchCallback) {
-						catchCallback(error);
-					}
-				})
-				.finally(() => {
-					if (finallyCallback) {
-						finallyCallback();
-					}
-				});
+				cleanTokens,
+				thenCallback,
+				catchCallback,
+				finallyCallback,
+			});
 		},
 		[accessToken, refreshToken]
 	);

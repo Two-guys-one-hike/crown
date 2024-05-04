@@ -59,6 +59,8 @@ export function createJWTAxiosInstance(
 
 					/*
 					 * Retry the initial call, but with the updated token in the headers.
+					 * Injects the refresh token into the data, useful in case the
+					 * original call includes the refresh token as in the case of logout.
 					 * Resolves the promise if successful.
 					 */
 					error.response.config.headers["Authorization"] =
@@ -68,7 +70,6 @@ export function createJWTAxiosInstance(
 							...error.response.config.data,
 							...refreshToken.data,
 						};
-
 					return axios_instance(error.response.config);
 				})
 				.catch((retry_error) => {
@@ -80,15 +81,6 @@ export function createJWTAxiosInstance(
 				});
 		}
 	);
-
-	return axios_instance;
-}
-
-export function createSimpleAxiosInstance(baseUrl: string) {
-	const axios_instance = axios.create({
-		baseURL: baseUrl,
-		timeout: 1000,
-	});
 
 	return axios_instance;
 }
