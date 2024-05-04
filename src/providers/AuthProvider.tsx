@@ -11,8 +11,8 @@ import {
 	createJWTAxiosInstance,
 	JWTAccessToken,
 	JWTRefreshToken,
-	ResponseStoreTokens,
-	ErrorCleanTokens,
+	StoreTokens,
+	ClearTokens,
 } from "@utils/AxiosHelpers";
 
 interface AuthProviderProps {
@@ -86,11 +86,11 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				url: "/api/account/token/refresh/",
 				data: { refresh: refreshToken },
 			};
-			const storeTokens: ResponseStoreTokens = (responseData: any) => {
+			const storeTokens: StoreTokens = (responseData: any) => {
 				setAccessToken(responseData.access);
 				setRefreshToken(responseData.refresh);
 			};
-			const cleanTokens: ErrorCleanTokens = () => {
+			const cleanTokens: ClearTokens = () => {
 				setAccessToken(null);
 				setRefreshToken(null);
 			};
@@ -133,8 +133,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	);
 
 	useEffect((): void => {
-		console.log("access changed:", accessToken);
-		console.log("refresh changed:", refreshToken);
 		accessToken
 			? localStorage.setItem("accessToken", accessToken)
 			: localStorage.removeItem("accessToken");

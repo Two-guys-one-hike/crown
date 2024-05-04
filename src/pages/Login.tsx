@@ -14,34 +14,32 @@ interface Credentials {
 }
 
 const Login: React.FC = () => {
+	const baseClass = "form-control";
+	const [usernameCN, setUsernameCN] = useState(baseClass);
+	const [passwordCN, setPasswordCN] = useState(baseClass);
 	const { setAccessToken, setRefreshToken, authApiCall }: AuthContext =
 		useAuth();
 	const navigate: NavigateFunction = useNavigate();
-	const [usernameCN, setUsernameCN] = useState("form-control");
-	const [passwordCN, setPasswordCN] = useState("form-control");
 
 	const {
 		register,
 		handleSubmit,
 		setError,
-		reset,
 		resetField,
 		formState: { errors, isSubmitted },
 	} = useForm();
 
-	const onSubmit = (formData: any) => {
+	const submitCallback = (formData: any) => {
 		const credentials = formData as Credentials;
 
 		const thenCallback = (response: any) => {
 			// Store access and refresh tokens
 			setAccessToken(response.data.access);
 			setRefreshToken(response.data.refresh);
-			reset();
 			navigate("/", { replace: true });
 		};
 
 		const catchCallback = (error: any) => {
-			console.log(error.response.data.detail);
 			resetField("password");
 			setError("password", {
 				type: "generic",
@@ -58,23 +56,21 @@ const Login: React.FC = () => {
 			console.error(error);
 		};
 
-		const requestApiCall: ApiCallOptionalParameters = {
+		const authApiCallParams: ApiCallOptionalParameters = {
 			method: "POST",
 			data: credentials,
 			thenCallback,
 			catchCallback,
 		};
-		authApiCall("/api/account/token/", requestApiCall);
+		authApiCall("/api/account/token/", authApiCallParams);
 	};
 
 	useEffect((): void => {
 		if (errors.username?.type === "required") {
-			setUsernameCN(
-				cn("form-control", { "is-valid": false, "is-invalid": true })
-			);
+			setUsernameCN(cn(baseClass, { "is-valid": false, "is-invalid": true }));
 		} else if (!errors.username) {
 			setUsernameCN(
-				cn("form-control", {
+				cn(baseClass, {
 					"is-valid": isSubmitted ? true : false,
 					"is-invalid": false,
 				})
@@ -84,12 +80,10 @@ const Login: React.FC = () => {
 
 	useEffect((): void => {
 		if (errors.password?.type === "required") {
-			setPasswordCN(
-				cn("form-control", { "is-valid": false, "is-invalid": true })
-			);
+			setPasswordCN(cn(baseClass, { "is-valid": false, "is-invalid": true }));
 		} else if (!errors.password) {
 			setPasswordCN(
-				cn("form-control", {
+				cn(baseClass, {
 					"is-valid": isSubmitted ? true : false,
 					"is-invalid": false,
 				})
@@ -99,7 +93,7 @@ const Login: React.FC = () => {
 
 	return (
 		<div>
-			<form onSubmit={handleSubmit(onSubmit)}>
+			<form onSubmit={handleSubmit(submitCallback)}>
 				<div className="mb-3">
 					<label htmlFor="inputUserName" className="form-label">
 						Username

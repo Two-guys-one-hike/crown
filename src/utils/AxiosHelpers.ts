@@ -8,22 +8,22 @@ export type JWTRefreshToken = {
 	url: string;
 	data: object;
 };
-export type ResponseStoreTokens = (data: any) => void;
-export type ErrorCleanTokens = () => void;
+export type StoreTokens = (data: any) => void;
+export type ClearTokens = () => void;
 
 export function createJWTAxiosInstance(
 	baseUrl: string,
 	accessToken: JWTAccessToken,
 	refreshToken?: JWTRefreshToken,
-	storeTokens?: ResponseStoreTokens,
-	cleanTokens?: ErrorCleanTokens
+	storeTokens?: StoreTokens,
+	clearTokens?: ClearTokens
 ) {
 	const axios_instance = axios.create({
 		baseURL: baseUrl,
 		timeout: 1000,
 		headers: accessToken.token
 			? { Authorization: "Bearer " + accessToken.token }
-			: {},
+			: undefined,
 	});
 
 	const interceptor = axios_instance.interceptors.response.use(
@@ -66,8 +66,8 @@ export function createJWTAxiosInstance(
 				})
 				.catch((retry_error) => {
 					// Retry failed, clean up and reject the promise
-					if (cleanTokens) {
-						cleanTokens();
+					if (clearTokens) {
+						clearTokens();
 					}
 					return Promise.reject(retry_error);
 				});

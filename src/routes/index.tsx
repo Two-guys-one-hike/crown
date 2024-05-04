@@ -57,8 +57,9 @@ const Routes: React.FC = () => {
 	// Combine and conditionally include routes based on authentication status
 	const router = createBrowserRouter([
 		...routesForPublic,
-		...(!accessToken ? routesForNotAuthenticatedOnly : []),
-		...routesForAuthenticatedOnly,
+		...(accessToken
+			? routesForAuthenticatedOnly
+			: routesForNotAuthenticatedOnly),
 	]);
 
 	// Provide the router configuration using RouterProvider

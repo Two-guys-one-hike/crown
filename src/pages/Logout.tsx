@@ -15,6 +15,7 @@ const Logout: React.FC = () => {
 	const navigate: NavigateFunction = useNavigate();
 
 	const handleLogout = (event: React.FormEvent) => {
+		// TODO Capire a cosa serve?
 		event.preventDefault();
 
 		const catchCallback = (error: any) => {
@@ -39,15 +40,9 @@ const Logout: React.FC = () => {
 
 	return (
 		<div>
-			<form>
-				<button
-					type="submit"
-					className="btn btn-primary"
-					onClick={handleLogout}
-				>
-					Logout
-				</button>
-			</form>
+			<button type="submit" className="btn btn-primary" onClick={handleLogout}>
+				Logout
+			</button>
 		</div>
 	);
 };
