@@ -6,8 +6,6 @@ import {
 import { useAuth, AuthContext } from "@providers/AuthProvider";
 import { ProtectedRoute } from "@routes/ProtectedRoute";
 import Home from "@pages/Home";
-import Login from "@pages/Login";
-import Logout from "@pages/Logout";
 
 const Routes: React.FC = () => {
 	const { accessToken }: AuthContext = useAuth();
@@ -40,7 +38,7 @@ const Routes: React.FC = () => {
 				},
 				{
 					path: "/logout",
-					element: <Logout />,
+					element: <div>Logout</div>,
 				},
 			],
 		},
@@ -50,7 +48,7 @@ const Routes: React.FC = () => {
 	const routesForNotAuthenticatedOnly: RouteObject[] = [
 		{
 			path: "/login",
-			element: <Login />,
+			element: <div>Login</div>,
 		},
 	];
 

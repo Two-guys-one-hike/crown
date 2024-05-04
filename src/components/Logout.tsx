@@ -4,8 +4,13 @@ import {
 	AuthContext,
 	AuthAPICallParams,
 } from "@providers/AuthProvider";
+import { Button } from "react-bootstrap";
 
-const Logout: React.FC = () => {
+interface LogoutProps {
+	disabled?: boolean;
+}
+
+const Logout: React.FC<LogoutProps> = ({ disabled }: LogoutProps) => {
 	const {
 		refreshToken,
 		setAccessToken,
@@ -38,9 +43,9 @@ const Logout: React.FC = () => {
 
 	return (
 		<div>
-			<button type="submit" className="btn btn-primary" onClick={handleLogout}>
+			<Button variant="primary" onClick={handleLogout} disabled={disabled}>
 				Logout
-			</button>
+			</Button>
 		</div>
 	);
 };
