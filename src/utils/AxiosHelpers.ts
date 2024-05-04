@@ -13,6 +13,7 @@ export type ClearTokens = () => void;
 
 export function createJWTAxiosInstance(
 	baseUrl: string,
+	injectRefresh: boolean,
 	accessToken: JWTAccessToken,
 	refreshToken?: JWTRefreshToken,
 	storeTokens?: StoreTokens,
@@ -62,6 +63,12 @@ export function createJWTAxiosInstance(
 					 */
 					error.response.config.headers["Authorization"] =
 						"Bearer " + response.data[accessToken.name];
+					if (injectRefresh)
+						error.response.config.data = {
+							...error.response.config.data,
+							...refreshToken.data,
+						};
+
 					return axios_instance(error.response.config);
 				})
 				.catch((retry_error) => {
@@ -73,6 +80,15 @@ export function createJWTAxiosInstance(
 				});
 		}
 	);
+
+	return axios_instance;
+}
+
+export function createSimpleAxiosInstance(baseUrl: string) {
+	const axios_instance = axios.create({
+		baseURL: baseUrl,
+		timeout: 1000,
+	});
 
 	return axios_instance;
 }
