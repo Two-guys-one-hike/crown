@@ -14,12 +14,11 @@ const Navbar = () => {
 	useEffect((): void => {
 		if (accessToken) {
 			const thenCallback = (response: any) => {
-				console.log("user:", response.data);
 				setUser(response.data);
 			};
 
 			const catchCallback = (error: any) => {
-				console.error(error);
+				console.error("Retrieve user data failed:", error);
 			};
 
 			const authApiCallParams: AuthAPICallParams = {

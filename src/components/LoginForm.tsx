@@ -26,7 +26,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onReset }) => {
 	const handleSubmit = methods.handleSubmit((data) => {
 		const thenCallback = (response: any) => {
 			// Store access and refresh tokens
-			console.log("Then callback:", response.data);
 			setAccessToken(response.data.access);
 			setRefreshToken(response.data.refresh);
 			onSuccess && onSuccess();
@@ -40,7 +39,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onReset }) => {
 					? error.response?.data.detail
 					: error.message,
 			});
-			console.error(error);
+			console.error("Login failed:", error);
 		};
 
 		const authApiCallParams: AuthAPICallParams = {

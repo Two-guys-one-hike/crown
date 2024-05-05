@@ -21,7 +21,7 @@ const Logout: React.FC<LogoutProps> = ({ disabled }: LogoutProps) => {
 
 	const handleLogout = (event: React.FormEvent) => {
 		const catchCallback = (error: any) => {
-			console.log("Logout failed:", error);
+			console.error("Logout failed:", error);
 		};
 
 		const finallyCallback = () => {
